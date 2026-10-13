@@ -1,0 +1,6 @@
+{
+  "name": "Menu Đồ Uống Tiếng Trung - Thực Hành Order Nước",
+  "description": "Menu đồ uống tương tác song ngữ Trung - Việt phục vụ học sinh thực hành gọi món, chọn đường đá, tạo hóa đơn và luyện đối thoại.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

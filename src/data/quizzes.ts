@@ -1,0 +1,98 @@
+import { QuizQuestion } from '../types/menu';
+
+export const PRACTICE_QUIZZES: QuizQuestion[] = [
+  {
+    id: 'q1',
+    type: 'listen',
+    prompt: 'Nghe phát âm tiếng Trung và bấm chọn đúng món đồ uống:',
+    promptZh: '听录音，选出正确的饮品：',
+    audioZh: '蜂蜜柠檬茶',
+    options: [
+      { id: 'opt1', text: 'Nước Trà Chanh Mật Ong', textZh: '蜂蜜柠檬茶', pinyin: 'fēng mì níng méng chá', isCorrect: true },
+      { id: 'opt2', text: 'Trà xanh kem cheese', textZh: '芝士奶盖绿茶', pinyin: 'zhī shì nǎi gài lǜ chá', isCorrect: false },
+      { id: 'opt3', text: 'Trà đào', textZh: '蜜桃茶', pinyin: 'mì táo chá', isCorrect: false },
+      { id: 'opt4', text: 'Nước cam', textZh: '橙汁', pinyin: 'chéng zhī', isCorrect: false },
+    ],
+    explanationVi: '蜂蜜柠檬茶 (fēng mì níng méng chá): 蜂蜜 (mật ong) + 柠檬 (chanh) + 茶 (trà).',
+  },
+  {
+    id: 'q2',
+    type: 'listen',
+    prompt: 'Nghe phát âm tiếng Trung và bấm chọn đúng món đồ uống:',
+    promptZh: '听录音，选出正确的饮品：',
+    audioZh: '牛油果冰沙',
+    options: [
+      { id: 'opt1', text: 'Ép dưa hấu', textZh: '西瓜汁', pinyin: 'xī guā zhī', isCorrect: false },
+      { id: 'opt2', text: 'Sinh tố bơ', textZh: '牛油果冰沙', pinyin: 'niú yóu guǒ bīng shā', isCorrect: true },
+      { id: 'opt3', text: 'Cacao bạc hà', textZh: '薄荷可可', pinyin: 'bò hé kě kě', isCorrect: false },
+      { id: 'opt4', text: 'Bạc xỉu', textZh: '越南白咖啡', pinyin: 'Yuènán bái kāfēi', isCorrect: false },
+    ],
+    explanationVi: '牛油果冰沙 (niú yóu guǒ bīng shā): 牛油果 = trái bơ, 冰沙 = đá xay / sinh tố đá bào.',
+  },
+  {
+    id: 'q3',
+    type: 'hanzi',
+    prompt: 'Nhìn chữ Hán sau đây, cho biết nghĩa tiếng Việt là gì?',
+    promptZh: '芝士奶盖绿茶',
+    options: [
+      { id: 'opt1', text: 'Cà phê sữa đá', isCorrect: false },
+      { id: 'opt2', text: 'Matcha latte', isCorrect: false },
+      { id: 'opt3', text: 'Trà xanh kem cheese', isCorrect: true },
+      { id: 'opt4', text: 'Cacao bạc hà', isCorrect: false },
+    ],
+    explanationVi: '芝士 (zhīshì = cheese), 奶盖 (nǎigài = váng sữa/kem sữa), 绿茶 (lǜchá = trà xanh).',
+  },
+  {
+    id: 'q4',
+    type: 'hanzi',
+    prompt: 'Chữ Hán nào sau đây là món "Bạc xỉu"?',
+    promptZh: '选出代表 "Bạc xỉu" 的中文词汇：',
+    options: [
+      { id: 'opt1', text: '越南白咖啡 / 白咖啡', textZh: '越南白咖啡', pinyin: 'Yuènán bái kāfēi', isCorrect: true },
+      { id: 'opt2', text: '冰炼乳咖啡', textZh: '冰炼乳咖啡', pinyin: 'bīng liàn rǔ kā fēi', isCorrect: false },
+      { id: 'opt3', text: '抹茶拿铁', textZh: '抹茶拿铁', pinyin: 'mǒ chá ná tiě', isCorrect: false },
+      { id: 'opt4', text: '薄荷可可', textZh: '薄荷可可', pinyin: 'bò hé kě kě', isCorrect: false },
+    ],
+    explanationVi: 'Bạc xỉu bắt nguồn từ tiếng Quảng Đông "Bạc tẩy xỉu phé", trong tiếng Trung phổ thông gọi là 越南白咖啡 hoặc 白咖啡.',
+  },
+  {
+    id: 'q5',
+    type: 'hanzi',
+    prompt: 'Khách muốn gọi "70% đường, ít đá", cụm từ tiếng Trung là gì?',
+    promptZh: '“70% đường, ít đá” trong tiếng Trung nói thế nào?',
+    options: [
+      { id: 'opt1', text: '全糖，正常冰 (quán táng, zhèngcháng bīng)', isCorrect: false },
+      { id: 'opt2', text: '少糖，少冰 (shǎo táng, shǎo bīng)', isCorrect: true },
+      { id: 'opt3', text: '无糖，去冰 (wú táng, qù bīng)', isCorrect: false },
+      { id: 'opt4', text: '半糖，热 (bàn táng, rè)', isCorrect: false },
+    ],
+    explanationVi: '少糖 (shǎo táng) = 70% đường (ít ngọt hơn chuẩn); 少冰 (shǎo bīng) = ít đá.',
+  },
+  {
+    id: 'q6',
+    type: 'order_sentence',
+    prompt: 'Sắp xếp các khối từ thành câu hoàn chỉnh: "Tôi muốn 1 ly trà đào, 50% đường, mang về."',
+    promptZh: '我要一杯蜜桃茶，半糖，打包。',
+    explanationVi: 'Thứ tự đúng: 我要一杯 (Tôi muốn 1 ly) -> 蜜桃茶 (trà đào) -> 半糖 (50% đường) -> 打包 (mang về).',
+    correctOrder: ['w1', 'w2', 'w3', 'w4'],
+    scrambledWords: [
+      { id: 'w3', wordZh: '半糖', pinyin: 'bàn táng', meaningVi: '50% đường' },
+      { id: 'w1', wordZh: '我要一杯', pinyin: 'wǒ yào yī bēi', meaningVi: 'Tôi muốn 1 ly' },
+      { id: 'w4', wordZh: '打包', pinyin: 'dǎ bāo', meaningVi: 'mang về' },
+      { id: 'w2', wordZh: '蜜桃茶', pinyin: 'mì táo chá', meaningVi: 'trà đào' },
+    ],
+  },
+  {
+    id: 'q7',
+    type: 'order_sentence',
+    prompt: 'Sắp xếp các khối từ thành câu: "Cho tôi một ly cà phê sữa đá, ít đá."',
+    promptZh: '给我一杯冰炼乳咖啡，少冰。',
+    explanationVi: 'Thứ tự chuẩn: 给我一杯 (Cho tôi một ly) -> 冰炼乳咖啡 (cà phê sữa đá) -> 少冰 (ít đá).',
+    correctOrder: ['w1', 'w2', 'w3'],
+    scrambledWords: [
+      { id: 'w2', wordZh: '冰炼乳咖啡', pinyin: 'bīng liàn rǔ kā fēi', meaningVi: 'cà phê sữa đá' },
+      { id: 'w3', wordZh: '少冰', pinyin: 'shǎo bīng', meaningVi: 'ít đá' },
+      { id: 'w1', wordZh: '给我一杯', pinyin: 'gěi wǒ yī bēi', meaningVi: 'Cho tôi một ly' },
+    ],
+  },
+];

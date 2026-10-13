@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Compatibility shim for Chrome extensions and third-party interceptors attempting to set window.fetch
+      try {
+        let _activeFetch = window.fetch ? window.fetch.bind(window) : undefined;
+        Object.defineProperty(window, 'fetch', {
+          get: function () {
+            return _activeFetch;
+          },
+          set: function (fn) {
+            _activeFetch = fn;
+          },
+          configurable: true,
+          enumerable: true,
+        });
+      } catch (_) {}
+
+      // Suppress unhandled errors originating from chrome-extension scripts
+      window.addEventListener('error', function (e) {
+        if (
+          (e.filename && e.filename.indexOf('chrome-extension://') !== -1) ||
+          (e.message && e.message.indexOf('fetch') !== -1 && e.message.indexOf('getter') !== -1)
+        ) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }, true);
+    </script>
+    <title>Menu Đồ Uống Tiếng Trung - Thực Hành Order Nước</title>
+    <meta name="description" content="Menu đồ uống tương tác song ngữ Trung - Việt phục vụ học sinh thực hành gọi món, chọn đường đá, tạo hóa đơn và luyện đối thoại." />
+    <meta property="og:title" content="Menu Đồ Uống Tiếng Trung - Thực Hành Order Nước" />
+    <meta property="og:description" content="Menu đồ uống tương tác song ngữ Trung - Việt phục vụ học sinh thực hành gọi món, chọn đường đá, tạo hóa đơn và luyện đối thoại." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
