@@ -46,7 +46,7 @@ export function getChineseVoice(): SpeechSynthesisVoice | null {
 
   // Prioritize Mandarin Chinese voices
   const zhVoices = voices.filter(
-    (v) => v.lang.startsWith('zh') || v.lang.includes('cmn') || v.lang === 'zh-CN' || v.lang === 'zh-TW'
+    (v) => v && typeof v.lang === 'string' && (v.lang.startsWith('zh') || v.lang.includes('cmn') || v.lang === 'zh-CN' || v.lang === 'zh-TW')
   );
 
   if (zhVoices.length === 0) return null;
