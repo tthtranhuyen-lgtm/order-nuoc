@@ -1,11 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Sparkles, Coffee, ShoppingBag, Heart, ArrowRight } from 'lucide-react';
-import { Navbar } from './components/Navbar';
+import { Navbar, MainAppTab } from './components/Navbar';
 import { LessonHeader, PreferenceType } from './components/LessonHeader';
 import { DrinkCard } from './components/DrinkCard';
 import { CustomizationModal } from './components/CustomizationModal';
 import { OrderReceiptModal } from './components/OrderReceiptModal';
 import { OrderingGrammarModal } from './components/OrderingGrammarModal';
+import { TextbookLessonView } from './components/TextbookLessonView';
+import { GamesView } from './components/GamesView';
 import { DRINKS_DATA } from './data/drinks';
 import { DrinkItem, DrinkCategory, OrderItem } from './types/menu';
 import { buildOrderSentence, formatVND } from './utils/sentenceBuilder';
@@ -13,6 +15,7 @@ import { speakChinese } from './utils/speech';
 import { sounds } from './utils/sound';
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState<MainAppTab>('order');
   const [showPinyin, setShowPinyin] = useState<boolean>(true);
   const [speechRate, setSpeechRate] = useState<number>(0.9);
 
@@ -109,8 +112,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-stone-50/80 text-stone-900 font-sans flex flex-col selection:bg-amber-200 selection:text-amber-900">
-      {/* Streamlined Top Navigation */}
+      {/* Streamlined Top Navigation with Mode Tabs */}
       <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
         cartCount={cartCount}
         cartTotal={cartTotal}
         onOpenCart={() => {
@@ -127,138 +132,153 @@ export default function App() {
         setSpeechRate={setSpeechRate}
       />
 
-      {/* Main Order & Speaking Practice Screen */}
+      {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-        {/* 1. DEDICATED LESSON HEADER: "Hôm nay học cách nói thích đồ uống gì" */}
-        <LessonHeader
-          currentDrink={selectedPreferenceDrink}
-          preferenceType={preferenceType}
-          setPreferenceType={setPreferenceType}
-          showPinyin={showPinyin}
-          speechRate={speechRate}
-        />
+        {/* TAB 1: ORDER SCREEN */}
+        {activeTab === 'order' && (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            {/* 1. DEDICATED LESSON HEADER: "Hôm nay học cách nói thích đồ uống gì" */}
+            <LessonHeader
+              currentDrink={selectedPreferenceDrink}
+              preferenceType={preferenceType}
+              setPreferenceType={setPreferenceType}
+              showPinyin={showPinyin}
+              speechRate={speechRate}
+            />
 
-        {/* QUICK GRAMMAR & ORDERING PHRASES BANNER */}
-        <div
-          onClick={() => {
-            sounds.playTap();
-            setIsGrammarOpen(true);
-          }}
-          className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-2xl p-3.5 sm:p-4 text-white shadow-md cursor-pointer hover:shadow-lg transition-all flex items-center justify-between gap-3 transform hover:-translate-y-0.5"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl shrink-0">
-              📖
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-black text-sm sm:text-base">Mẫu Câu & Ngữ Pháp Lúc Order Nước (点单语法)</span>
-                <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">5 Bước Chuẩn</span>
-              </div>
-              <p className="text-xs text-amber-100 hidden sm:block">
-                Học trọn bộ công thức vàng: 我要 + Size + Đồ uống + Đường + Đá + Topping + Mang về/Ở lại!
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            className="px-3.5 py-1.5 rounded-xl bg-white text-amber-800 text-xs font-bold shrink-0 shadow-xs hover:bg-amber-50 transition-colors"
-          >
-            Bấm Xem Ngay 👉
-          </button>
-        </div>
-
-        {/* 2. MENU FILTER & SEARCH ROW */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border border-stone-200/90 shadow-xs space-y-3">
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-            {/* Search Input */}
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tìm món đồ uống: chanh, 柠檬, bơ, cam, đào, cà phê..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-stone-100/80 border border-stone-200 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400 hover:text-stone-700"
-                >
-                  Xóa
-                </button>
-              )}
-            </div>
-
-            {/* Category Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs">
-              {[
-                { key: 'all' as const, label: 'Tất cả (全部 10 món)', emoji: '🍹' },
-                { key: 'tea' as const, label: 'Trà (茶饮)', emoji: '🍋' },
-                { key: 'coffee' as const, label: 'Cà phê (咖啡)', emoji: '☕' },
-                { key: 'juice' as const, label: 'Nước ép & Sinh tố (果汁)', emoji: '🥑' },
-                { key: 'milktea' as const, label: 'Trà sữa & Cacao (特调)', emoji: '🍵' },
-              ].map((cat) => (
-                <button
-                  key={cat.key}
-                  onClick={() => {
-                    sounds.playTap();
-                    setSelectedCategory(cat.key);
-                  }}
-                  className={`whitespace-nowrap px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
-                    selectedCategory === cat.key
-                      ? 'bg-amber-600 text-white shadow-xs'
-                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                  }`}
-                >
-                  <span>{cat.emoji}</span>
-                  <span>{cat.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between text-xs text-stone-500 pt-1 border-t border-stone-100">
-            <span>
-              Menu đồ uống thực hành: <strong className="text-stone-800">{filteredDrinks.length}</strong> món
-            </span>
-            <span className="hidden sm:inline">
-              Mẹo: Bấm nút hồng để nói "Tôi thích", bấm nút cam để chọn đường/đá tạo bill!
-            </span>
-          </div>
-        </div>
-
-        {/* 3. DRINK CARDS GRID (WITH REALISTIC PHOTOS CORRESPONDING TO EACH DRINK) */}
-        {filteredDrinks.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-stone-200">
-            <Coffee className="w-12 h-12 text-stone-300 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-stone-700">Không tìm thấy món nước nào</h3>
-            <button
+            {/* QUICK GRAMMAR & ORDERING PHRASES BANNER */}
+            <div
               onClick={() => {
-                setSearchQuery('');
-                setSelectedCategory('all');
+                sounds.playTap();
+                setIsGrammarOpen(true);
               }}
-              className="mt-4 px-4 py-2 rounded-xl bg-amber-600 text-white text-xs font-bold"
+              className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-2xl p-3.5 sm:p-4 text-white shadow-md cursor-pointer hover:shadow-lg transition-all flex items-center justify-between gap-3 transform hover:-translate-y-0.5"
             >
-              Xem lại tất cả 10 món
-            </button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl shrink-0">
+                  📖
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-sm sm:text-base">Mẫu Câu & Ngữ Pháp Lúc Order Nước (点单语法)</span>
+                    <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">5 Bước Chuẩn</span>
+                  </div>
+                  <p className="text-xs text-amber-100 hidden sm:block">
+                    Học trọn bộ công thức vàng: 我要 + Size + Đồ uống + Đường + Đá + Topping + Mang về/Ở lại!
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="px-3.5 py-1.5 rounded-xl bg-white text-amber-800 text-xs font-bold shrink-0 shadow-xs hover:bg-amber-50 transition-colors"
+              >
+                Bấm Xem Ngay 👉
+              </button>
+            </div>
+
+            {/* 2. MENU FILTER & SEARCH ROW */}
+            <div className="bg-white rounded-3xl p-4 sm:p-5 border border-stone-200/90 shadow-xs space-y-3">
+              <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                {/* Search Input */}
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Tìm món đồ uống: chanh, 柠檬, bơ, cam, đào, cà phê..."
+                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-stone-100/80 border border-stone-200 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400 hover:text-stone-700"
+                    >
+                      Xóa
+                    </button>
+                  )}
+                </div>
+
+                {/* Category Filter Pills */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs">
+                  {[
+                    { key: 'all' as const, label: 'Tất cả (全部 10 món)', emoji: '🍹' },
+                    { key: 'tea' as const, label: 'Trà (茶饮)', emoji: '🍋' },
+                    { key: 'coffee' as const, label: 'Cà phê (咖啡)', emoji: '☕' },
+                    { key: 'juice' as const, label: 'Nước ép & Sinh tố (果汁)', emoji: '🥑' },
+                    { key: 'milktea' as const, label: 'Trà sữa & Cacao (特调)', emoji: '🍵' },
+                  ].map((cat) => (
+                    <button
+                      key={cat.key}
+                      onClick={() => {
+                        sounds.playTap();
+                        setSelectedCategory(cat.key);
+                      }}
+                      className={`whitespace-nowrap px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
+                        selectedCategory === cat.key
+                          ? 'bg-amber-600 text-white shadow-xs'
+                          : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                      }`}
+                    >
+                      <span>{cat.emoji}</span>
+                      <span>{cat.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-stone-500 pt-1 border-t border-stone-100">
+                <span>
+                  Menu đồ uống thực hành: <strong className="text-stone-800">{filteredDrinks.length}</strong> món
+                </span>
+                <span className="hidden sm:inline">
+                  Mẹo: Bấm nút hồng để nói "Tôi thích", bấm nút cam để chọn đường/đá tạo bill!
+                </span>
+              </div>
+            </div>
+
+            {/* 3. DRINK CARDS GRID */}
+            {filteredDrinks.length === 0 ? (
+              <div className="bg-white rounded-3xl p-12 text-center border border-stone-200">
+                <Coffee className="w-12 h-12 text-stone-300 mx-auto mb-3" />
+                <h3 className="text-base font-bold text-stone-700">Không tìm thấy món nước nào</h3>
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedCategory('all');
+                  }}
+                  className="mt-4 px-4 py-2 rounded-xl bg-amber-600 text-white text-xs font-bold"
+                >
+                  Xem lại tất cả 10 món
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredDrinks.map((drink) => (
+                  <DrinkCard
+                    key={drink.id}
+                    drink={drink}
+                    showPinyin={showPinyin}
+                    speechRate={speechRate}
+                    isSelected={selectedPreferenceDrink?.id === drink.id}
+                    onSelect={(d) => handleSelectDrink(d)}
+                    onPracticeLike={(d) => handlePracticeLike(d)}
+                    onQuickOrder={(d) => handleQuickOrder(d)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredDrinks.map((drink) => (
-              <DrinkCard
-                key={drink.id}
-                drink={drink}
-                showPinyin={showPinyin}
-                speechRate={speechRate}
-                isSelected={selectedPreferenceDrink?.id === drink.id}
-                onSelect={(d) => handleSelectDrink(d)}
-                onPracticeLike={(d) => handlePracticeLike(d)}
-                onQuickOrder={(d) => handleQuickOrder(d)}
-              />
-            ))}
-          </div>
+        )}
+
+        {/* TAB 2: TEXTBOOK DIALOGUES (BÀI KHÓA 课文) */}
+        {activeTab === 'textbook' && (
+          <TextbookLessonView showPinyin={showPinyin} speechRate={speechRate} />
+        )}
+
+        {/* TAB 3: LEARNING GAMES (TRÒ CHƠI 游戏) */}
+        {activeTab === 'games' && (
+          <GamesView showPinyin={showPinyin} speechRate={speechRate} />
         )}
       </main>
 
