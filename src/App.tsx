@@ -5,6 +5,7 @@ import { LessonHeader, PreferenceType } from './components/LessonHeader';
 import { DrinkCard } from './components/DrinkCard';
 import { CustomizationModal } from './components/CustomizationModal';
 import { OrderReceiptModal } from './components/OrderReceiptModal';
+import { OrderingGrammarModal } from './components/OrderingGrammarModal';
 import { DRINKS_DATA } from './data/drinks';
 import { DrinkItem, DrinkCategory, OrderItem } from './types/menu';
 import { buildOrderSentence, formatVND } from './utils/sentenceBuilder';
@@ -26,6 +27,7 @@ export default function App() {
   // Cart / Order
   const [cartItems, setCartItems] = useState<OrderItem[]>([]);
   const [isReceiptOpen, setIsReceiptOpen] = useState<boolean>(false);
+  const [isGrammarOpen, setIsGrammarOpen] = useState<boolean>(false);
 
   // Drink selected for order customization modal
   const [customizingDrink, setCustomizingDrink] = useState<DrinkItem | null>(null);
@@ -115,6 +117,10 @@ export default function App() {
           sounds.playTap();
           setIsReceiptOpen(true);
         }}
+        onOpenGrammar={() => {
+          sounds.playTap();
+          setIsGrammarOpen(true);
+        }}
         showPinyin={showPinyin}
         setShowPinyin={setShowPinyin}
         speechRate={speechRate}
@@ -131,6 +137,36 @@ export default function App() {
           showPinyin={showPinyin}
           speechRate={speechRate}
         />
+
+        {/* QUICK GRAMMAR & ORDERING PHRASES BANNER */}
+        <div
+          onClick={() => {
+            sounds.playTap();
+            setIsGrammarOpen(true);
+          }}
+          className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-2xl p-3.5 sm:p-4 text-white shadow-md cursor-pointer hover:shadow-lg transition-all flex items-center justify-between gap-3 transform hover:-translate-y-0.5"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl shrink-0">
+              📖
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-black text-sm sm:text-base">Mẫu Câu & Ngữ Pháp Lúc Order Nước (点单语法)</span>
+                <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full">5 Bước Chuẩn</span>
+              </div>
+              <p className="text-xs text-amber-100 hidden sm:block">
+                Học trọn bộ công thức vàng: 我要 + Size + Đồ uống + Đường + Đá + Topping + Mang về/Ở lại!
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="px-3.5 py-1.5 rounded-xl bg-white text-amber-800 text-xs font-bold shrink-0 shadow-xs hover:bg-amber-50 transition-colors"
+          >
+            Bấm Xem Ngay 👉
+          </button>
+        </div>
 
         {/* 2. MENU FILTER & SEARCH ROW */}
         <div className="bg-white rounded-3xl p-4 sm:p-5 border border-stone-200/90 shadow-xs space-y-3">
@@ -287,6 +323,14 @@ export default function App() {
         onRemoveItem={handleRemoveItem}
         onClearCart={handleClearCart}
         onContinueOrdering={() => setIsReceiptOpen(false)}
+        showPinyin={showPinyin}
+        speechRate={speechRate}
+      />
+
+      {/* Ordering Grammar & Dialogue Steps Modal */}
+      <OrderingGrammarModal
+        isOpen={isGrammarOpen}
+        onClose={() => setIsGrammarOpen(false)}
         showPinyin={showPinyin}
         speechRate={speechRate}
       />

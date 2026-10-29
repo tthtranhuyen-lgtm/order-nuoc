@@ -184,6 +184,12 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
               <span className="font-semibold text-stone-700">Dịch nghĩa: </span>
               {sentence.vietnamese}
             </p>
+
+            {/* Quick Grammar Formula */}
+            <div className="mt-2 pt-1.5 border-t border-amber-200/60 flex items-center gap-1.5 text-[11px] text-amber-900 font-medium flex-wrap">
+              <span className="font-bold bg-amber-200/80 px-1.5 py-0.5 rounded text-[10px]">Công thức</span>
+              <span>我要 + [Size ly] + [Tên món] + [Đường] + [Đá/Nóng] + 加[Topping] + [Mang về/Tại quán]</span>
+            </div>
           </div>
 
           {/* 1. Chọn Size Ly (杯型) */}
@@ -333,7 +339,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                     <div>
                       <div className="text-sm font-bold text-stone-900">{i.nameZh}</div>
                       {showPinyin && <div className="text-[11px] text-amber-700 font-medium">{i.pinyin}</div>}
-                      <div className="text-[11px] text-stone-500">{i.nameVi.split(' ')[0]}</div>
+                      <div className="text-[11px] text-stone-500">{i.nameVi}</div>
                     </div>
                     <button
                       type="button"

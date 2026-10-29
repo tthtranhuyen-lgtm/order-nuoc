@@ -6,6 +6,7 @@ interface NavbarProps {
   cartCount: number;
   cartTotal: number;
   onOpenCart: () => void;
+  onOpenGrammar: () => void;
   showPinyin: boolean;
   setShowPinyin: (show: boolean) => void;
   speechRate: number;
@@ -16,6 +17,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   cartCount,
   cartTotal,
   onOpenCart,
+  onOpenGrammar,
   showPinyin,
   setShowPinyin,
   speechRate,
@@ -47,7 +49,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Quick Learning Controls & Order Bill */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
+            {/* Open Grammar Guide Button */}
+            <button
+              onClick={onOpenGrammar}
+              title="Xem các mẫu câu giao tiếp và ngữ pháp lúc order nước"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition-all"
+            >
+              <span>📖</span>
+              <span className="hidden sm:inline">Mẫu Câu & Ngữ Pháp Order</span>
+              <span className="sm:hidden">Mẫu Câu</span>
+            </button>
             {/* Pinyin Switch */}
             <button
               onClick={() => setShowPinyin(!showPinyin)}

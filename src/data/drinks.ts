@@ -259,7 +259,7 @@ export const ICE_LEVELS = [
   { key: 'regular' as const, nameZh: '正常冰', pinyin: 'zhèng cháng bīng', nameVi: 'Đá bình thường' },
   { key: 'less' as const, nameZh: '少冰', pinyin: 'shǎo bīng', nameVi: 'Ít đá (Khuyên dùng)' },
   { key: 'no_ice' as const, nameZh: '去冰', pinyin: 'qù bīng', nameVi: 'Không đá (Bỏ đá)' },
-  { key: 'hot' as const, nameZh: '热', pinyin: 'rè', nameVi: 'Uống nóng' },
+  { key: 'hot' as const, nameZh: '热', pinyin: 'rè', nameVi: 'Nóng' },
 ];
 
 export const DINING_OPTIONS = [
