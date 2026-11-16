@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Volume2, Play, Square, BookOpen, CheckCircle2, XCircle, Sparkles, HelpCircle, Eye, EyeOff } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { TEXTBOOK_LESSONS, TextbookLesson, TextbookSentence } from '../data/textbookLessons';
@@ -16,36 +16,61 @@ export const TextbookLessonView: React.FC<TextbookLessonViewProps> = ({ showPiny
   const [isPlayingAll, setIsPlayingAll] = useState(false);
   const [showTranslation, setShowTranslation] = useState(true);
 
+  const playbackSessionRef = useRef<number>(0);
+
+  // Stop audio cleanly on unmount
+  useEffect(() => {
+    return () => {
+      playbackSessionRef.current += 1;
+      stopSpeaking();
+    };
+  }, []);
+
   // Comprehension quiz states
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
   const [submittedQuiz, setSubmittedQuiz] = useState(false);
 
-  // Read single sentence
+  // Stop any sequential loop and read single sentence
   const handlePlaySentence = (sentence: TextbookSentence, slow: boolean = false) => {
     sounds.playTap();
+    const sessionId = ++playbackSessionRef.current;
+    setIsPlayingAll(false);
     setActiveSentenceId(sentence.id);
     speakChinese(sentence.chinese, slow ? 0.65 : speechRate).then(() => {
-      setActiveSentenceId(null);
+      if (playbackSessionRef.current === sessionId) {
+        setActiveSentenceId(null);
+      }
     });
   };
 
-  // Play full text sequentially
+  // Play full text sequentially with strict cancellation check
   const handlePlayAll = async () => {
     if (isPlayingAll) {
+      playbackSessionRef.current += 1;
       stopSpeaking();
       setIsPlayingAll(false);
       setActiveSentenceId(null);
       return;
     }
 
+    const sessionId = ++playbackSessionRef.current;
     setIsPlayingAll(true);
+
     for (const sent of selectedLesson.sentences) {
+      if (playbackSessionRef.current !== sessionId) break;
       setActiveSentenceId(sent.id);
-      await speakChinese(sent.chinese, speechRate);
-      await new Promise((r) => setTimeout(r, 650));
+
+      const completed = await speakChinese(sent.chinese, speechRate);
+      if (!completed || playbackSessionRef.current !== sessionId) break;
+
+      await new Promise((r) => setTimeout(r, 600));
+      if (playbackSessionRef.current !== sessionId) break;
     }
-    setIsPlayingAll(false);
-    setActiveSentenceId(null);
+
+    if (playbackSessionRef.current === sessionId) {
+      setIsPlayingAll(false);
+      setActiveSentenceId(null);
+    }
   };
 
   const handleSelectOption = (questionId: string, optionId: string) => {
@@ -136,6 +161,7 @@ export const TextbookLessonView: React.FC<TextbookLessonViewProps> = ({ showPiny
               key={lesson.id}
               onClick={() => {
                 sounds.playTap();
+                playbackSessionRef.current += 1;
                 stopSpeaking();
                 setIsPlayingAll(false);
                 setActiveSentenceId(null);
@@ -273,6 +299,9 @@ export const TextbookLessonView: React.FC<TextbookLessonViewProps> = ({ showPiny
               key={vocab.id}
               onClick={() => {
                 sounds.playTap();
+                playbackSessionRef.current += 1;
+                setIsPlayingAll(false);
+                setActiveSentenceId(null);
                 speakChinese(vocab.chinese, speechRate);
               }}
               className="p-3 rounded-2xl bg-stone-50 border border-stone-200 hover:border-amber-400 hover:bg-amber-50/40 cursor-pointer transition-all flex items-center justify-between"

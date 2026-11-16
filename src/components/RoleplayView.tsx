@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Volume2, Play, Square, UserCheck, MessageSquareText, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { DIALOGUE_SCENARIOS } from '../data/dialogues';
 import { DialogueScenario, DialogueLine } from '../types/menu';
@@ -16,33 +16,53 @@ export const RoleplayView: React.FC<RoleplayViewProps> = ({ showPinyin, speechRa
   const [isPlayingAll, setIsPlayingAll] = useState<boolean>(false);
   const [showTranslation, setShowTranslation] = useState<boolean>(true);
 
+  const playbackSessionRef = useRef<number>(0);
+
+  useEffect(() => {
+    return () => {
+      playbackSessionRef.current += 1;
+      stopSpeaking();
+    };
+  }, []);
+
   // Play a single line
   const handlePlayLine = (line: DialogueLine) => {
     sounds.playTap();
+    const sessionId = ++playbackSessionRef.current;
+    setIsPlayingAll(false);
     setActiveLineId(line.id);
     speakChinese(line.chinese, speechRate).then(() => {
-      setActiveLineId(null);
+      if (playbackSessionRef.current === sessionId) {
+        setActiveLineId(null);
+      }
     });
   };
 
   // Play all lines sequentially
   const handlePlayAll = async () => {
     if (isPlayingAll) {
+      playbackSessionRef.current += 1;
       stopSpeaking();
       setIsPlayingAll(false);
       setActiveLineId(null);
       return;
     }
 
+    const sessionId = ++playbackSessionRef.current;
     setIsPlayingAll(true);
     for (const line of selectedScenario.lines) {
+      if (playbackSessionRef.current !== sessionId) break;
       setActiveLineId(line.id);
-      await speakChinese(line.chinese, speechRate);
+      const completed = await speakChinese(line.chinese, speechRate);
+      if (!completed || playbackSessionRef.current !== sessionId) break;
       // Brief pause between speaker turns
       await new Promise((r) => setTimeout(r, 600));
+      if (playbackSessionRef.current !== sessionId) break;
     }
-    setIsPlayingAll(false);
-    setActiveLineId(null);
+    if (playbackSessionRef.current === sessionId) {
+      setIsPlayingAll(false);
+      setActiveLineId(null);
+    }
   };
 
   return (
@@ -104,6 +124,7 @@ export const RoleplayView: React.FC<RoleplayViewProps> = ({ showPinyin, speechRa
               key={sc.id}
               onClick={() => {
                 sounds.playTap();
+                playbackSessionRef.current += 1;
                 stopSpeaking();
                 setIsPlayingAll(false);
                 setActiveLineId(null);

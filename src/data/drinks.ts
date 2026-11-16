@@ -1,4 +1,14 @@
 import { DrinkItem, ToppingOption } from '../types/menu';
+import traChanhMatOngImg from '../assets/images/tra_chanh_mat_ong_1794824177640.jpg';
+import traXanhKemCheeseImg from '../assets/images/tra_xanh_kem_cheese_1794824177403.jpg';
+import cacaoBacHaImg from '../assets/images/cacao_bac_ha_1794824177629.jpg';
+import bacXiuImg from '../assets/images/bac_xiu_1794824178342.jpg';
+import traDaoImg from '../assets/images/tra_dao_1794824180453.jpg';
+import caPheSuaDaImg from '../assets/images/ca_phe_sua_da_1794824203098.jpg';
+import sinhToBoImg from '../assets/images/sinh_to_bo_1794824204063.jpg';
+import epDuaHauImg from '../assets/images/ep_dua_hau_1794824204756.jpg';
+import nuocCamImg from '../assets/images/nuoc_cam_1794824204667.jpg';
+import matchaLatteImg from '../assets/images/matcha_latte_1794824208694.jpg';
 
 export const DRINKS_DATA: DrinkItem[] = [
   {
@@ -13,7 +23,7 @@ export const DRINKS_DATA: DrinkItem[] = [
     priceVnd: 35000,
     descriptionVi: 'Vị chua ngọt thanh mát từ nước cốt chanh tươi kết hợp mật ong hoa rừng thơm lừng.',
     descriptionZh: '新鲜柠檬配上纯天然蜂蜜，酸甜可口，清凉解渴。',
-    imageUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80',
+    imageUrl: traChanhMatOngImg,
     imageEmoji: '🍋',
     bgGradient: 'from-amber-400 to-yellow-500',
     accentColor: '#f59e0b',
@@ -33,7 +43,7 @@ export const DRINKS_DATA: DrinkItem[] = [
     priceVnd: 45000,
     descriptionVi: 'Trà xanh lài thơm nhẹ phủ lớp kem cheese béo ngậy mằn mặn đặc trưng.',
     descriptionZh: '茉莉绿茶打底，上层覆盖醇厚浓郁、微咸香滑的芝士奶盖。',
-    imageUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80',
+    imageUrl: traXanhKemCheeseImg,
     imageEmoji: '🧀',
     bgGradient: 'from-emerald-400 to-teal-600',
     accentColor: '#10b981',
@@ -53,7 +63,7 @@ export const DRINKS_DATA: DrinkItem[] = [
     priceVnd: 42000,
     descriptionVi: 'Bột cacao nguyên chất đậm đà quyện với tinh dầu bạc hà the mát sảng khoái.',
     descriptionZh: '浓郁纯香的可可粉融合清凉薄荷糖浆，冰爽怡人。',
-    imageUrl: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=800&q=80',
+    imageUrl: cacaoBacHaImg,
     imageEmoji: '🍫',
     bgGradient: 'from-amber-800 to-emerald-700',
     accentColor: '#78350f',
@@ -73,7 +83,7 @@ export const DRINKS_DATA: DrinkItem[] = [
     priceVnd: 32000,
     descriptionVi: 'Thức uống đặc trưng Sài Gòn: nhiều sữa đặc béo ngậy quyện chút đắng nhẹ của cà phê phin.',
     descriptionZh: '经典的越南白咖啡，以浓甜的炼乳与鲜奶为主，点缀少许浓缩咖啡。',
-    imageUrl: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80',
+    imageUrl: bacXiuImg,
     imageEmoji: '🥛',
     bgGradient: 'from-amber-200 to-stone-400',
     accentColor: '#a16207',
@@ -93,7 +103,7 @@ export const DRINKS_DATA: DrinkItem[] = [
     priceVnd: 38000,
     descriptionVi: 'Trà đen thơm ủ đẫm vị đào thanh nhã kèm những miếng đào ngâm giòn ngọt thơm lừng.',
     descriptionZh: '清香红茶搭配鲜甜多汁的水蜜桃果肉，香气扑鼻。',
-    imageUrl: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80',
+    imageUrl: traDaoImg,
     imageEmoji: '🍑',
     bgGradient: 'from-rose-300 to-orange-400',
     accentColor: '#f43f5e',
@@ -113,7 +123,7 @@ export const DRINKS_DATA: DrinkItem[] = [
     priceVnd: 30000,
     descriptionVi: 'Cà phê Robusta đậm vị phin nhỏ từng giọt hòa cùng sữa đặc béo ngậy và đá mát lạnh.',
     descriptionZh: '举世闻名的越南冰奶咖啡，香浓滴漏咖啡与甜甜炼乳的完美结合。',
-    imageUrl: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=800&q=80',
+    imageUrl: caPheSuaDaImg,
     imageEmoji: '☕',
     bgGradient: 'from-amber-900 to-stone-900',
     accentColor: '#451a03',
@@ -133,7 +143,7 @@ export const DRINKS_DATA: DrinkItem[] = [
     priceVnd: 45000,
     descriptionVi: 'Bơ sáp dẻo béo xay mịn cùng sữa tươi và sữa đặc, giàu dinh dưỡng và thơm mịn.',
     descriptionZh: '新鲜优质牛油果与香浓炼乳、牛奶一起打成丝滑细腻的冰沙。',
-    imageUrl: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=800&q=80',
+    imageUrl: sinhToBoImg,
     imageEmoji: '🥑',
     bgGradient: 'from-lime-400 to-emerald-600',
     accentColor: '#65a30d',
@@ -153,7 +163,7 @@ export const DRINKS_DATA: DrinkItem[] = [
     priceVnd: 32000,
     descriptionVi: 'Dưa hấu tươi mọng nước ép nguyên chất ngọt mát tự nhiên không thêm đường.',
     descriptionZh: '纯天然鲜榨西瓜汁，清甜多汁，解热消暑必备良品。',
-    imageUrl: 'https://images.unsplash.com/photo-1589733955941-5eeaf752f6dd?auto=format&fit=crop&w=800&q=80',
+    imageUrl: epDuaHauImg,
     imageEmoji: '🍉',
     bgGradient: 'from-red-400 to-rose-600',
     accentColor: '#e11d48',
@@ -173,7 +183,7 @@ export const DRINKS_DATA: DrinkItem[] = [
     priceVnd: 35000,
     descriptionVi: 'Cam sành tươi vắt mọng tép giàu vitamin C tăng cường sức đề kháng mỗi ngày.',
     descriptionZh: '鲜榨橙汁，富含维生素C，酸甜爽口，营养丰富。',
-    imageUrl: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=800&q=80',
+    imageUrl: nuocCamImg,
     imageEmoji: '🍊',
     bgGradient: 'from-orange-400 to-amber-500',
     accentColor: '#ea580c',
@@ -193,7 +203,7 @@ export const DRINKS_DATA: DrinkItem[] = [
     priceVnd: 45000,
     descriptionVi: 'Bột matcha Nhật Bản nguyên chất hòa quyện lớp sữa tươi thanh trùng béo ngậy êm dịu.',
     descriptionZh: '精选高品质抹茶粉，融合浓醇丝滑的鲜牛奶，微苦回甘。',
-    imageUrl: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=800&q=80',
+    imageUrl: matchaLatteImg,
     imageEmoji: '🍵',
     bgGradient: 'from-emerald-500 to-green-700',
     accentColor: '#059669',

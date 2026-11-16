@@ -58,24 +58,69 @@ export function getChineseVoice(): SpeechSynthesisVoice | null {
   return zhVoices[0];
 }
 
+let activeSpeechToken = 0;
+let pendingTimer: ReturnType<typeof setTimeout> | null = null;
+let pendingResolve: ((completed: boolean) => void) | null = null;
+let currentUtterance: SpeechSynthesisUtterance | null = null;
+
 export function stopSpeaking() {
+  activeSpeechToken += 1;
+
+  if (pendingTimer !== null) {
+    clearTimeout(pendingTimer);
+    pendingTimer = null;
+  }
+
+  if (pendingResolve) {
+    const resolveFn = pendingResolve;
+    pendingResolve = null;
+    resolveFn(false);
+  }
+
+  currentUtterance = null;
+
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
+    try {
+      window.speechSynthesis.cancel();
+    } catch {
+      // Ignore browser quirks on cancel
+    }
   }
 }
 
-export function speakChinese(text: string, rate: number = 0.9): Promise<void> {
+export function speakChinese(text: string, rate: number = 0.9): Promise<boolean> {
   return new Promise((resolve) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      resolve();
+      resolve(false);
       return;
     }
 
     stopSpeaking();
 
-    // Small timeout to ensure cancel finishes
-    setTimeout(() => {
+    const myToken = activeSpeechToken;
+    pendingResolve = resolve;
+
+    const finish = (completed: boolean) => {
+      if (pendingResolve === resolve) {
+        pendingResolve = null;
+      }
+      if (currentUtterance && myToken === activeSpeechToken) {
+        currentUtterance = null;
+      }
+      resolve(myToken === activeSpeechToken ? completed : false);
+    };
+
+    // Small timeout to ensure cancel finishes in browser speech engine
+    pendingTimer = setTimeout(() => {
+      pendingTimer = null;
+
+      if (myToken !== activeSpeechToken) {
+        finish(false);
+        return;
+      }
+
       const utterance = new SpeechSynthesisUtterance(text);
+      currentUtterance = utterance;
       utterance.lang = 'zh-CN';
       utterance.rate = rate; // 0.8 - 0.9 is great for learners
       utterance.pitch = 1.0;
@@ -86,20 +131,20 @@ export function speakChinese(text: string, rate: number = 0.9): Promise<void> {
       }
 
       utterance.onend = () => {
-        resolve();
+        finish(myToken === activeSpeechToken);
       };
 
       utterance.onerror = () => {
-        resolve();
+        finish(false);
       };
 
       try {
         window.speechSynthesis.speak(utterance);
       } catch (e) {
         console.warn('Speech synthesis error:', e);
-        resolve();
+        finish(false);
       }
-    }, 50);
+    }, 60);
   });
 }
 
