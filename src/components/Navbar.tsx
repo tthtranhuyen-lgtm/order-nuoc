@@ -1,5 +1,5 @@
 import React from 'react';
-import { Coffee, ShoppingBag, Volume2, Sparkles, Heart, BookOpen, Gamepad2, Layers } from 'lucide-react';
+import { Coffee, ShoppingBag, Volume2, Heart, BookOpen, Gamepad2, Eye, EyeOff, PenTool } from 'lucide-react';
 import { formatVND } from '../utils/sentenceBuilder';
 
 export type MainAppTab = 'order' | 'textbook' | 'games';
@@ -13,6 +13,10 @@ interface NavbarProps {
   onOpenGrammar: () => void;
   showPinyin: boolean;
   setShowPinyin: (show: boolean) => void;
+  showVietnamese: boolean;
+  setShowVietnamese: (show: boolean) => void;
+  isPenOpen: boolean;
+  setIsPenOpen: (open: boolean) => void;
   speechRate: number;
   setSpeechRate: (rate: number) => void;
 }
@@ -26,6 +30,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenGrammar,
   showPinyin,
   setShowPinyin,
+  showVietnamese,
+  setShowVietnamese,
+  isPenOpen,
+  setIsPenOpen,
   speechRate,
   setSpeechRate,
 }) => {
@@ -35,21 +43,21 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-20">
           {/* Logo & Store Identity */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('order')}>
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-md shadow-amber-500/20 shrink-0">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-md shadow-amber-500/20 shrink-0">
               <Coffee className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xl font-bold tracking-tight text-stone-900">
+                <span className="text-lg sm:text-xl font-bold tracking-tight text-stone-900">
                   茶语 <span className="text-amber-600 font-extrabold">CháYǔ</span>
                 </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 hidden sm:inline-flex items-center gap-1">
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 hidden xl:inline-flex items-center gap-1">
                   <Heart className="w-3 h-3 fill-rose-500" />
-                  <span>Bài học: 你喜欢喝什么？</span>
+                  <span>你喜欢喝什么？</span>
                 </span>
               </div>
               <p className="text-xs text-stone-500 font-medium hidden md:block">
-                Menu đồ uống • Bài khóa đối thoại • Trò chơi ghi nhớ
+                Menu đồ uống • Bài khóa • Trò chơi
               </p>
             </div>
           </div>
@@ -58,81 +66,109 @@ export const Navbar: React.FC<NavbarProps> = ({
           <nav className="hidden lg:flex items-center gap-1 bg-stone-100 p-1.5 rounded-2xl border border-stone-200">
             <button
               onClick={() => setActiveTab('order')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'order'
                   ? 'bg-white text-amber-900 shadow-xs'
                   : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
               }`}
             >
               <span>🧋</span>
-              <span>Menu Gọi Món (点单)</span>
+              <span>Menu Gọi Món</span>
             </button>
 
             <button
               onClick={() => setActiveTab('textbook')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'textbook'
                   ? 'bg-white text-emerald-900 shadow-xs'
                   : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
               }`}
             >
               <BookOpen className="w-4 h-4 text-emerald-600" />
-              <span>Bài Khóa (课文)</span>
+              <span>Bài Khóa</span>
             </button>
 
             <button
               onClick={() => setActiveTab('games')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'games'
                   ? 'bg-white text-purple-900 shadow-xs'
                   : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
               }`}
             >
               <Gamepad2 className="w-4 h-4 text-purple-600" />
-              <span>Trò Chơi (游戏)</span>
+              <span>Trò Chơi</span>
             </button>
           </nav>
 
           {/* Quick Learning Controls & Order Bill */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Teacher Pen Toggle */}
+            <button
+              onClick={() => setIsPenOpen(!isPenOpen)}
+              title="Bật/Tắt bút viết bảng cho giáo viên giảng bài"
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
+                isPenOpen
+                  ? 'bg-rose-600 border-rose-600 text-white shadow-sm'
+                  : 'bg-white border-stone-200 text-stone-700 hover:bg-amber-50 hover:border-amber-300'
+              }`}
+            >
+              <PenTool className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">{isPenOpen ? 'Tắt Bút' : 'Bút GV'}</span>
+            </button>
+
             {/* Open Grammar Guide Button */}
             <button
               onClick={onOpenGrammar}
               title="Xem các mẫu câu giao tiếp và ngữ pháp lúc order nước"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition-all"
+              className="flex items-center gap-1 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition-all"
             >
               <span>📖</span>
-              <span className="hidden sm:inline">Mẫu Câu Order</span>
+              <span className="hidden xl:inline">Mẫu Câu</span>
             </button>
 
             {/* Pinyin Switch */}
             <button
               onClick={() => setShowPinyin(!showPinyin)}
-              title="Bật/Tắt hiển thị Pinyin để thử thách đọc chữ Hán"
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
+              title="Bật/Tắt hiển thị Pinyin"
+              className={`flex items-center gap-1 px-2.5 py-2 rounded-xl text-xs font-bold border transition-all ${
                 showPinyin
                   ? 'bg-amber-50 border-amber-300 text-amber-800 shadow-2xs'
                   : 'bg-stone-100 border-stone-200 text-stone-500 hover:bg-stone-200'
               }`}
             >
               <span className="font-mono text-sm leading-none">拼</span>
-              <span className="hidden sm:inline">{showPinyin ? 'Pinyin: Bật' : 'Pinyin: Ẩn'}</span>
+              <span className="hidden sm:inline">{showPinyin ? 'Pinyin' : 'Ẩn Py'}</span>
+            </button>
+
+            {/* Vietnamese Meaning Switch */}
+            <button
+              onClick={() => setShowVietnamese(!showVietnamese)}
+              title="Bật/Tắt nghĩa tiếng Việt để học sinh luyện đọc chữ Hán"
+              className={`flex items-center gap-1 px-2.5 py-2 rounded-xl text-xs font-bold border transition-all ${
+                showVietnamese
+                  ? 'bg-sky-50 border-sky-300 text-sky-800 shadow-2xs'
+                  : 'bg-stone-900 border-stone-900 text-white shadow-2xs'
+              }`}
+            >
+              {showVietnamese ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+              <span className="hidden sm:inline">{showVietnamese ? 'Nghĩa Việt' : 'Ẩn Việt'}</span>
             </button>
 
             {/* Speech rate toggle */}
             <button
               onClick={() => setSpeechRate(speechRate === 0.9 ? 0.7 : 0.9)}
-              title="Đổi tốc độ phát âm (0.9x chuẩn hoặc 0.7x chậm cho học sinh)"
-              className="hidden sm:flex items-center gap-1 px-2.5 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200 transition-all"
+              title="Đổi tốc độ phát âm (0.9x chuẩn hoặc 0.7x chậm)"
+              className="hidden xl:flex items-center gap-1 px-2.5 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200 transition-all"
             >
               <Volume2 className="w-3.5 h-3.5 text-stone-500" />
-              <span>{speechRate === 0.9 ? '0.9x' : '0.7x (Chậm)'}</span>
+              <span>{speechRate === 0.9 ? '0.9x' : '0.7x'}</span>
             </button>
 
             {/* Cart / Bill Button */}
             <button
               onClick={onOpenCart}
-              className="relative flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs sm:text-sm shadow-md shadow-amber-600/20 transition-transform active:scale-95"
+              className="relative flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs sm:text-sm shadow-md shadow-amber-600/20 transition-transform active:scale-95"
             >
               <ShoppingBag className="w-4 h-4" />
               <div className="flex flex-col text-left">

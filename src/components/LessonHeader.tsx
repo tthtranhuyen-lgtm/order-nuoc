@@ -11,6 +11,7 @@ interface LessonHeaderProps {
   preferenceType: PreferenceType;
   setPreferenceType: (type: PreferenceType) => void;
   showPinyin: boolean;
+  showVietnamese?: boolean;
   speechRate: number;
 }
 
@@ -19,6 +20,7 @@ export const LessonHeader: React.FC<LessonHeaderProps> = ({
   preferenceType,
   setPreferenceType,
   showPinyin,
+  showVietnamese = true,
   speechRate,
 }) => {
   const [isSpeakingTeacher, setIsSpeakingTeacher] = useState(false);
@@ -197,9 +199,11 @@ export const LessonHeader: React.FC<LessonHeaderProps> = ({
                   {activePattern.questionPinyin}
                 </p>
               )}
-              <p className="text-xs sm:text-sm text-stone-600 mt-1 font-medium italic">
-                "{activePattern.questionVi}"
-              </p>
+              {showVietnamese && (
+                <p className="text-xs sm:text-sm text-stone-600 mt-1 font-medium italic">
+                  "{activePattern.questionVi}"
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -245,9 +249,11 @@ export const LessonHeader: React.FC<LessonHeaderProps> = ({
                   {studentAnswerPinyin}
                 </p>
               )}
-              <p className="text-xs sm:text-sm text-stone-700 mt-1 font-semibold italic">
-                "{studentAnswerVi}"
-              </p>
+              {showVietnamese && (
+                <p className="text-xs sm:text-sm text-stone-700 mt-1 font-semibold italic">
+                  "{studentAnswerVi}"
+                </p>
+              )}
             </div>
           </div>
 

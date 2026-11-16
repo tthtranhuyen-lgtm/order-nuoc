@@ -8,6 +8,7 @@ import { sounds } from '../utils/sound';
 interface DrinkCardProps {
   drink: DrinkItem;
   showPinyin: boolean;
+  showVietnamese?: boolean;
   speechRate: number;
   isSelected?: boolean;
   onSelect: (drink: DrinkItem) => void;
@@ -18,6 +19,7 @@ interface DrinkCardProps {
 export const DrinkCard: React.FC<DrinkCardProps> = ({
   drink,
   showPinyin,
+  showVietnamese = true,
   speechRate,
   isSelected = false,
   onSelect,
@@ -85,7 +87,7 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({
         {/* Top Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
           <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-stone-800 shadow-sm border border-white/50">
-            {drink.categoryNameVi}
+            {showVietnamese ? drink.categoryNameVi : drink.categoryNameZh}
           </span>
 
           {drink.popular && (
@@ -102,9 +104,11 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({
             <span className="text-[11px] font-medium text-amber-200 bg-stone-900/60 px-2 py-0.5 rounded-md backdrop-blur-xs">
               {drink.categoryNameZh}
             </span>
-            <div className="text-xs text-stone-200 mt-1 line-clamp-1 drop-shadow-sm font-medium">
-              {drink.recommended}
-            </div>
+            {showVietnamese && (
+              <div className="text-xs text-stone-200 mt-1 line-clamp-1 drop-shadow-sm font-medium">
+                {drink.recommended}
+              </div>
+            )}
           </div>
           <span className="text-sm font-black bg-amber-600/90 backdrop-blur-md px-2.5 py-1 rounded-xl shadow-xs border border-amber-400/40">
             {formatVND(drink.priceVnd)}
@@ -142,15 +146,17 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({
             </p>
           )}
 
-          {/* Vietnamese Name */}
-          <p className="text-base font-semibold text-stone-700 mt-1">
-            {drink.nameVi}
-          </p>
-
-          {/* Flavor description */}
-          <p className="text-xs text-stone-500 mt-2 line-clamp-2 leading-relaxed">
-            {drink.descriptionVi}
-          </p>
+          {/* Vietnamese Name & Description */}
+          {showVietnamese && (
+            <>
+              <p className="text-base font-semibold text-stone-700 mt-1">
+                {drink.nameVi}
+              </p>
+              <p className="text-xs text-stone-500 mt-2 line-clamp-2 leading-relaxed">
+                {drink.descriptionVi}
+              </p>
+            </>
+          )}
         </div>
 
         {/* 3. Action Buttons: "Tôi thích..." & "Bấm chọn order" */}

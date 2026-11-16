@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Search, Sparkles, Coffee, ShoppingBag, Heart, ArrowRight } from 'lucide-react';
 import { Navbar, MainAppTab } from './components/Navbar';
 import { LessonHeader, PreferenceType } from './components/LessonHeader';
@@ -8,6 +8,7 @@ import { OrderReceiptModal } from './components/OrderReceiptModal';
 import { OrderingGrammarModal } from './components/OrderingGrammarModal';
 import { TextbookLessonView } from './components/TextbookLessonView';
 import { GamesView } from './components/GamesView';
+import { TeacherPenOverlay } from './components/TeacherPenOverlay';
 import { DRINKS_DATA } from './data/drinks';
 import { DrinkItem, DrinkCategory, OrderItem } from './types/menu';
 import { buildOrderSentence, formatVND } from './utils/sentenceBuilder';
@@ -15,8 +16,11 @@ import { speakChinese } from './utils/speech';
 import { sounds } from './utils/sound';
 
 export default function App() {
+  const pageWrapperRef = useRef<HTMLDivElement | null>(null);
   const [activeTab, setActiveTab] = useState<MainAppTab>('order');
   const [showPinyin, setShowPinyin] = useState<boolean>(true);
+  const [showVietnamese, setShowVietnamese] = useState<boolean>(true);
+  const [isPenOpen, setIsPenOpen] = useState<boolean>(false);
   const [speechRate, setSpeechRate] = useState<number>(0.9);
 
   // Lesson preference state
@@ -111,7 +115,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50/80 text-stone-900 font-sans flex flex-col selection:bg-amber-200 selection:text-amber-900">
+    <div
+      ref={pageWrapperRef}
+      className="min-h-screen relative bg-stone-50/80 text-stone-900 font-sans flex flex-col selection:bg-amber-200 selection:text-amber-900"
+    >
       {/* Streamlined Top Navigation with Mode Tabs */}
       <Navbar
         activeTab={activeTab}
@@ -128,6 +135,10 @@ export default function App() {
         }}
         showPinyin={showPinyin}
         setShowPinyin={setShowPinyin}
+        showVietnamese={showVietnamese}
+        setShowVietnamese={setShowVietnamese}
+        isPenOpen={isPenOpen}
+        setIsPenOpen={setIsPenOpen}
         speechRate={speechRate}
         setSpeechRate={setSpeechRate}
       />
@@ -143,6 +154,7 @@ export default function App() {
               preferenceType={preferenceType}
               setPreferenceType={setPreferenceType}
               showPinyin={showPinyin}
+              showVietnamese={showVietnamese}
               speechRate={speechRate}
             />
 
@@ -259,6 +271,7 @@ export default function App() {
                     key={drink.id}
                     drink={drink}
                     showPinyin={showPinyin}
+                    showVietnamese={showVietnamese}
                     speechRate={speechRate}
                     isSelected={selectedPreferenceDrink?.id === drink.id}
                     onSelect={(d) => handleSelectDrink(d)}
@@ -273,7 +286,15 @@ export default function App() {
 
         {/* TAB 2: TEXTBOOK DIALOGUES (BÀI KHÓA 课文) */}
         {activeTab === 'textbook' && (
-          <TextbookLessonView showPinyin={showPinyin} speechRate={speechRate} />
+          <TextbookLessonView
+            showPinyin={showPinyin}
+            setShowPinyin={setShowPinyin}
+            showVietnamese={showVietnamese}
+            setShowVietnamese={setShowVietnamese}
+            speechRate={speechRate}
+            isPenOpen={isPenOpen}
+            setIsPenOpen={setIsPenOpen}
+          />
         )}
 
         {/* TAB 3: LEARNING GAMES (TRÒ CHƠI 游戏) */}
@@ -353,6 +374,14 @@ export default function App() {
         onClose={() => setIsGrammarOpen(false)}
         showPinyin={showPinyin}
         speechRate={speechRate}
+      />
+
+      {/* Teacher Whiteboard Pen & Highlighter Annotation Overlay */}
+      <TeacherPenOverlay
+        isOpen={isPenOpen}
+        onClose={() => setIsPenOpen(false)}
+        pageKey={activeTab}
+        containerRef={pageWrapperRef}
       />
     </div>
   );
