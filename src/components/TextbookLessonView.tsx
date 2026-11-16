@@ -33,28 +33,47 @@ const getSpeakerStyle = (speakerZh: string) => {
       return {
         badgeBg: 'bg-amber-100 text-amber-900 border-amber-300',
         avatarBg: 'bg-amber-500 text-white',
-        cardBorder: 'border-amber-200/80 bg-amber-50/25',
+        cardBorder: 'border-amber-200 bg-amber-50/70',
       };
     case '兰兰':
       return {
         badgeBg: 'bg-rose-100 text-rose-900 border-rose-300',
         avatarBg: 'bg-rose-500 text-white',
-        cardBorder: 'border-stone-200 bg-white',
+        cardBorder: 'border-rose-200 bg-rose-50/40',
       };
     case '大卫':
       return {
         badgeBg: 'bg-teal-100 text-teal-900 border-teal-300',
         avatarBg: 'bg-teal-600 text-white',
-        cardBorder: 'border-stone-200 bg-white',
+        cardBorder: 'border-teal-200 bg-teal-50/50',
       };
     default:
       // 小明 / 阿明
       return {
         badgeBg: 'bg-sky-100 text-sky-900 border-sky-300',
         avatarBg: 'bg-sky-600 text-white',
-        cardBorder: 'border-stone-200 bg-white',
+        cardBorder: 'border-sky-200 bg-sky-50/50',
       };
   }
+};
+
+// Determine left vs right placement so speakers naturally alternate across both sides
+const isRightSpeakerSide = (lessonId: string, sent: TextbookSentence): boolean => {
+  if (sent.speakerZh === '店员') return false; // Thu ngân luôn bên trái
+
+  if (lessonId === 'lesson_1') {
+    // Đoạn đầu: Tiểu Minh (phải) <-> Lan Lan (trái); vào quán: Khách (phải) <-> Thu ngân (trái)
+    if (sent.id === 'l1_2') return false;
+    return true;
+  }
+
+  if (lessonId === 'lesson_2') {
+    // Đoạn đầu: A Minh (trái) <-> David (phải); vào quán: Khách (phải) <-> Thu ngân (trái)
+    if (sent.id === 'l2_1' || sent.id === 'l2_3') return false;
+    return true;
+  }
+
+  return false;
 };
 
 export const TextbookLessonView: React.FC<TextbookLessonViewProps> = ({
@@ -395,128 +414,139 @@ export const TextbookLessonView: React.FC<TextbookLessonViewProps> = ({
         </div>
       </div>
 
-      {/* SECTION 2: CLEAN TEXTBOOK DIALOGUE SCRIPT */}
-      <div className="bg-white rounded-3xl p-5 sm:p-7 border border-stone-200 shadow-xs space-y-5">
-        <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+      {/* SECTION 2: TWO-SIDED CHAT BUBBLE TEXTBOOK DIALOGUE */}
+      <div className="bg-white rounded-3xl p-4 sm:p-7 border border-stone-200 shadow-xs space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-3">
           <h3 className="font-black text-base sm:text-lg text-stone-900 flex items-center gap-2">
             <span>🗣️</span>
             <span>Nội Dung Bài Khóa (课文对话)</span>
           </h3>
           <span className="text-xs text-stone-500">
-            {selectedLesson.sentences.length} câu • Bấm từng câu để nghe
+            {selectedLesson.sentences.length} câu • Bấm từng bong bóng thoại để nghe
           </span>
         </div>
 
-        <div className="divide-y divide-stone-100 space-y-3">
+        <div className="bg-stone-50/70 rounded-2xl p-3 sm:p-5 border border-stone-200/70 space-y-4 sm:space-y-5">
           {selectedLesson.sentences.map((sent, index) => {
             const isActive = activeSentenceId === sent.id;
             const style = getSpeakerStyle(sent.speakerZh);
+            const isRight = isRightSpeakerSide(selectedLesson.id, sent);
             const isViVisible = showVietnamese || peekedSentenceIds[sent.id];
 
             return (
               <div
                 key={sent.id}
-                onClick={() => handlePlaySentence(sent, false)}
-                className={`p-4 sm:p-5 rounded-2xl border-2 cursor-pointer transition-all ${
-                  isActive
-                    ? 'border-amber-500 bg-amber-50/90 ring-4 ring-amber-500/15 shadow-sm'
-                    : `${style.cardBorder} hover:border-amber-300 hover:bg-stone-50/70`
+                className={`flex items-start gap-2.5 sm:gap-3.5 ${
+                  isRight ? 'flex-row-reverse' : 'flex-row'
                 }`}
               >
-                {/* Top row: Line number + Speaker + Audio controls */}
-                <div className="flex items-center justify-between gap-2 mb-2.5">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-xs font-mono font-black text-stone-400 w-6">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <span
-                      className={`w-7 h-7 rounded-lg flex items-center justify-center text-sm shadow-2xs ${style.avatarBg}`}
-                    >
-                      {sent.avatar}
-                    </span>
+                {/* Speaker Avatar & Line Number */}
+                <div className="flex flex-col items-center gap-1 shrink-0 pt-1">
+                  <div
+                    className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center text-lg sm:text-xl shadow-xs ${style.avatarBg}`}
+                  >
+                    {sent.avatar}
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-stone-400">
+                    #{String(index + 1).padStart(2, '0')}
+                  </span>
+                </div>
+
+                {/* Chat Bubble Card */}
+                <div
+                  onClick={() => handlePlaySentence(sent, false)}
+                  className={`w-full max-w-[88%] sm:max-w-[78%] p-4 sm:p-5 rounded-3xl border-2 cursor-pointer transition-all shadow-2xs ${
+                    isRight ? 'rounded-tr-md' : 'rounded-tl-md'
+                  } ${
+                    isActive
+                      ? 'border-amber-500 bg-amber-50 ring-4 ring-amber-500/20 shadow-md scale-[1.01]'
+                      : `${style.cardBorder} hover:border-amber-400 hover:shadow-sm`
+                  }`}
+                >
+                  {/* Top Header Row inside Bubble: Speaker Badge + Audio Controls */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
                     <span
                       className={`text-xs font-bold px-2.5 py-0.5 rounded-lg border ${style.badgeBg}`}
                     >
-                      {sent.speakerZh} • {sent.speakerVi}
+                      {sent.speakerZh} ({sent.speakerVi})
                     </span>
+
+                    <div className="flex items-center gap-1.5">
+                      {!showVietnamese && (
+                        <button
+                          type="button"
+                          onClick={(e) => togglePeekSentence(e, sent.id)}
+                          title="Hiện/Ẩn tạm nghĩa câu này"
+                          className="px-2 py-1 rounded-lg bg-white/80 hover:bg-sky-100 border border-stone-200 text-[11px] font-semibold text-stone-600 hover:text-sky-800 flex items-center gap-1"
+                        >
+                          <Eye className="w-3 h-3" />
+                          <span className="hidden sm:inline">
+                            {peekedSentenceIds[sent.id] ? 'Ẩn' : 'Nghĩa'}
+                          </span>
+                        </button>
+                      )}
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePlaySentence(sent, false);
+                        }}
+                        title="Nghe tốc độ chuẩn"
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors border ${
+                          isActive
+                            ? 'bg-amber-600 border-amber-600 text-white'
+                            : 'bg-white/90 hover:bg-amber-100 border-stone-200 text-stone-700 hover:text-amber-900'
+                        }`}
+                      >
+                        <Volume2 className={`w-3.5 h-3.5 ${isActive ? 'animate-pulse' : ''}`} />
+                        <span className="hidden sm:inline">Nghe</span>
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePlaySentence(sent, true);
+                        }}
+                        title="Nghe chậm 0.65x"
+                        className="px-2 py-1 rounded-lg bg-white/90 hover:bg-amber-100 border border-stone-200 text-xs font-bold text-stone-700"
+                      >
+                        🐢
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
-                    {!showVietnamese && (
-                      <button
-                        type="button"
-                        onClick={(e) => togglePeekSentence(e, sent.id)}
-                        title="Hiện/Ẩn tạm nghĩa câu này"
-                        className="px-2 py-1 rounded-lg bg-stone-100 hover:bg-sky-100 text-[11px] font-semibold text-stone-600 hover:text-sky-800 flex items-center gap-1"
+                  {/* Chinese Sentence (always left-aligned inside bubble for clean reading) */}
+                  <div className="space-y-1.5 text-left">
+                    <p
+                      className={`font-black text-stone-900 tracking-wide leading-relaxed ${
+                        largeTextMode ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-xl'
+                      }`}
+                    >
+                      {sent.chinese}
+                    </p>
+
+                    {/* Pinyin */}
+                    {showPinyin && (
+                      <p
+                        className={`font-semibold text-amber-800 tracking-wide ${
+                          largeTextMode ? 'text-base sm:text-lg' : 'text-xs sm:text-sm'
+                        }`}
                       >
-                        <Eye className="w-3 h-3" />
-                        <span className="hidden sm:inline">
-                          {peekedSentenceIds[sent.id] ? 'Ẩn' : 'Nghĩa'}
-                        </span>
-                      </button>
+                        {sent.pinyin}
+                      </p>
                     )}
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePlaySentence(sent, false);
-                      }}
-                      title="Nghe tốc độ chuẩn"
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors ${
-                        isActive
-                          ? 'bg-amber-600 text-white'
-                          : 'bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900'
-                      }`}
-                    >
-                      <Volume2 className={`w-3.5 h-3.5 ${isActive ? 'animate-pulse' : ''}`} />
-                      <span className="hidden sm:inline">Nghe</span>
-                    </button>
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePlaySentence(sent, true);
-                      }}
-                      title="Nghe chậm 0.65x"
-                      className="px-2 py-1 rounded-lg bg-stone-100 hover:bg-amber-100 text-xs font-bold text-stone-700"
-                    >
-                      🐢
-                    </button>
+                    {/* Vietnamese translation */}
+                    {isViVisible && (
+                      <p
+                        className={`text-stone-600 pt-1.5 border-t border-stone-200/70 ${
+                          largeTextMode ? 'text-sm sm:text-base' : 'text-xs sm:text-sm'
+                        }`}
+                      >
+                        {sent.vietnamese}
+                      </p>
+                    )}
                   </div>
-                </div>
-
-                {/* Main Text Content with clean left indent aligned to speaker badge */}
-                <div className="pl-8 sm:pl-9 space-y-1.5">
-                  {/* Chinese characters - high contrast, generous spacing */}
-                  <p
-                    className={`font-black text-stone-900 tracking-wide leading-relaxed ${
-                      largeTextMode ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-xl'
-                    }`}
-                  >
-                    {sent.chinese}
-                  </p>
-
-                  {/* Pinyin */}
-                  {showPinyin && (
-                    <p
-                      className={`font-semibold text-amber-800 tracking-wide ${
-                        largeTextMode ? 'text-base sm:text-lg' : 'text-xs sm:text-sm'
-                      }`}
-                    >
-                      {sent.pinyin}
-                    </p>
-                  )}
-
-                  {/* Vietnamese translation */}
-                  {isViVisible && (
-                    <p
-                      className={`text-stone-600 pt-1.5 border-t border-stone-200/70 ${
-                        largeTextMode ? 'text-sm sm:text-base' : 'text-xs sm:text-sm'
-                      }`}
-                    >
-                      {sent.vietnamese}
-                    </p>
-                  )}
                 </div>
               </div>
             );
